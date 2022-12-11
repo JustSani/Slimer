@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using System.Text.RegularExpressions;
 using System;
 using System.Linq;
 using System.Text;
@@ -30,16 +31,17 @@ public class OnlineController : MonoBehaviour
             bool esito = false;
 
             print("Scene loading:" + serverResponse.text);
-            string Address = PlayerPrefs.GetString("Address");
-            print("("+Address+")");
-            Address = "192.168.178.109";
-            //Check dell input, DA TERMINARE PERCHE NON VA NIENTE
+            string Address = PlayerPrefs.GetString("Address").ToString();
+            //Address = "192.168.178.109";
+            
             if(Address == ""){
                 print("Empty" + Address);
                 //inputField.Focus();
             }
             else
             {
+                Address = Address.Remove(15);
+
                 try
                 {
                     ipServer = clsAddress.cercaIP(Address);
