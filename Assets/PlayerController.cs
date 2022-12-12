@@ -3,8 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+using System.Text.RegularExpressions;
+using System;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
+using UnityEngine.SceneManagement;
+using System.Net;
+using System.Net.Sockets;
+using TMPro;
+
 public class PlayerController : MonoBehaviour
 {
+    
+    IPAddress ipServer;
+    clsSocket clientSocket;
+    clsMessaggio msgByServer;
 
     public float moveSpeed = 1f;
     public ContactFilter2D movementFilter;
@@ -67,6 +82,38 @@ public class PlayerController : MonoBehaviour
                 
             if(count == 0){ // if not we move
                 rb.MovePosition(rb.position + direction * moveSpeed * Time.fixedDeltaTime);
+
+                //Invio al Server del nostro movimento
+                if(SceneManager.GetActiveScene().name != "SinglePlayerTestScene"){
+                    string Address = PlayerPrefs.GetString("Address").ToString();
+                    Address = Address.Remove(Address.Length - 1);
+                    print("Address: " + Address);
+                    try
+                    {
+                        ipServer = clsAddress.cercaIP(Address);
+                    }
+                    catch (Exception ex)
+                    {
+                        print("Indirizzo IP non valido : " + ex.Message);
+                        //inputField.Focus();
+                        ipServer = null;
+                    }
+
+                    if (ipServer != null)
+                    {
+                        // provo a Connettermi al SERVER
+
+                        try
+                        {
+                            inviaDatiServer("*SEND*@X:" + direction.x + ",Y:"+ direction.y);
+                        }
+                        catch (Exception ex)
+                        {
+                            print("ATTENZIONE: " + ex.Message);
+                        }
+
+                    }
+                }
                 return true;
             }
             else {
@@ -78,6 +125,24 @@ public class PlayerController : MonoBehaviour
     
     void OnMove(InputValue movementValue){
         movementInput = movementValue.Get<Vector2>();
+    }
+
+    public void inviaDatiServer(string strIN){
+        // Instanzio il Client Socket
+        clientSocket = new clsSocket(false, Convert.ToInt16(8888), ipServer);
+
+        // Invio il Messaggio al Server
+        clientSocket.inviaMsgCLIENT(strIN);
+
+        // Aspetto il Messaggio di Risposta del Server
+        msgByServer = clientSocket.clientRicevi();
+
+        // Aggiungo alla Lista la Risposta del Server
+        print("Response: " + msgByServer.ToString());
+
+        // Chiudo il Socket
+        clientSocket.Dispose();
+
     }
 
     void OnFire(){

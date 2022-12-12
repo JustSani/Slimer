@@ -93,8 +93,7 @@ public class OnlineController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(SceneManager.GetActiveScene().name == "LoadingMenu" && OperazioneSuClient.messaggio != ""){
-            print("We should switch scene");
+        if(OperazioneSuClient.messaggio != ""){
             string tipoRQ;
             string[] vDati;
 
@@ -103,11 +102,16 @@ public class OnlineController : MonoBehaviour
             switch (tipoRQ)
             {
                 case "*STAR*":
-                    print("You are here");
+                    serverSocket.inviaMsgSERVER("Done");
+
                     OperazioneSuClient.messaggio = "";
                     SceneManager.LoadScene(1);
                     break;
-
+                case "*MOVE*":
+                    serverSocket.inviaMsgSERVER("Done");
+                    print(OperazioneSuClient.messaggio);
+                    
+                    break;
                 default:
                         OperazioneSuClient.esito = "ERR_TXRQ";
                     break;
@@ -149,7 +153,7 @@ public class OnlineController : MonoBehaviour
             ip = IPAddress.Any;
 
             // Creo il Server Socket
-            serverSocket = new clsSocket(true, Convert.ToInt32(8887), ip);
+            serverSocket = new clsSocket(true, Convert.ToInt32(6969), ip);
 
             // Aggiungo l'Evento datiRicevuti
             serverSocket.datiRicevutiEvent += new datiRicevutiEventHandler(datiRicevuti);
