@@ -62,7 +62,7 @@ public class OnlineController : MonoBehaviour
 
                     try
                     {
-                        inviaDatiServer("*JOINING*");
+                        inviaDatiServer("*JOIN*");
                         esito = true;
                     }
                     catch (Exception ex)
@@ -128,7 +128,7 @@ public class OnlineController : MonoBehaviour
             // provo a Connettermi al SERVER
             try
             {
-                inviaDatiServer("*READY*");
+                inviaDatiServer("*REAY*");
                 esito = true;
             }
             catch (Exception ex)
@@ -187,7 +187,7 @@ public class OnlineController : MonoBehaviour
 
                     try
                     {
-                        inviaDatiServer("*QUITTING*");
+                        inviaDatiServer("*QUIT*");
                         esito = true;
                     }
                     catch (Exception ex)
