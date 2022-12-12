@@ -17,7 +17,6 @@ using System.Threading;
         public string ip;
         public UInt16 porta;
         public string messaggio;
-        public string nomeFile;
         public string esito;
 
         public override string ToString()
@@ -28,7 +27,7 @@ using System.Threading;
             return this.ip + " : " +
                 this.porta.ToString() + " - " +
                 this.messaggio +
-                " ==> (" + this.nomeFile + ") " +
+                " ==>  " +
                 this.esito;
         }
 

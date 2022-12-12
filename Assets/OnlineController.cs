@@ -20,7 +20,10 @@ public class OnlineController : MonoBehaviour
     public GameObject btnReady;
     public GameObject btnIndietro;
     
+    clsMessaggio OperazioneSuClient = new clsMessaggio();
+
     clsSocket clientSocket;
+    clsSocket serverSocket;
     IPAddress ipServer;
     clsMessaggio msgByServer;
     
@@ -30,7 +33,10 @@ public class OnlineController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        OperazioneSuClient.messaggio = "";
         string currentScene = SceneManager.GetActiveScene().name;
+
+        //SE CI TROVIAMO NELLA SCENA DI LOADING, INVIAMO LA RICHIESTA DI PARTECIPAZIONE ALLA PARTITA
         if(currentScene == "LoadingMenu"){
 
             print("Scene loading:" + serverResponse.text);
@@ -70,8 +76,6 @@ public class OnlineController : MonoBehaviour
                         print("ATTENZIONE: " + ex.Message);
                     }
 
-
-                    
                 }
 
             }
@@ -89,7 +93,26 @@ public class OnlineController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(SceneManager.GetActiveScene().name == "LoadingMenu" && OperazioneSuClient.messaggio != ""){
+            print("We should switch scene");
+            string tipoRQ;
+            string[] vDati;
+
+            tipoRQ = OperazioneSuClient.messaggio.Substring(0, 6);
+            print("Operazione da eseguire: (" + tipoRQ + ")");
+            switch (tipoRQ)
+            {
+                case "*STAR*":
+                    print("You are here");
+                    OperazioneSuClient.messaggio = "";
+                    SceneManager.LoadScene(1);
+                    break;
+
+                default:
+                        OperazioneSuClient.esito = "ERR_TXRQ";
+                    break;
+            }
+        }
     }
 
     public void inviaDatiServer(string strIN){
@@ -110,8 +133,43 @@ public class OnlineController : MonoBehaviour
 
     }
 
+    //NEL CASO IN CUI SIAMO PRONTI LO COMUNICHIAMO AL SERVER E CI METTIAMO IN ASCOLTO 
+    //PER INIZIARE LA PARTITA
     public void btnReadyClick(){
-         esito = false;
+        //MI METTO IN ASCOLTO DI UNA RISPOSTA DAL SERVER PER QUANDO INIZIA LA PARTITA
+        //EFFETIVO INIZIO DEL DIALOGO TRA CLIENT E SERVER NELLA QUALE OGNIUNO ASCOLTA
+        IPAddress ip;
+        bool errore = false;
+
+        try
+        {
+            if (serverSocket == null)
+            {
+            // Creo l'IP su cui attivare il Server
+            ip = IPAddress.Parse(Address);
+
+            // Creo il Server Socket
+            serverSocket = new clsSocket(true, Convert.ToInt32(8887), ip);
+
+            // Aggiungo l'Evento datiRicevuti
+            serverSocket.datiRicevutiEvent += new datiRicevutiEventHandler(datiRicevuti);
+            }
+        }
+        catch (Exception ex)
+        {
+            print("ATTENZIONE: " + ex.Message);
+            errore = true;
+        }
+
+        if (!errore)    
+        {
+            // Avvio del Socket
+            serverSocket.avviaServer();
+            print("CLIENT LISTENING TO SERVER");
+        }
+
+
+        esito = false;
         try
         {
             ipServer = clsAddress.cercaIP(Address);
@@ -140,13 +198,38 @@ public class OnlineController : MonoBehaviour
             btnIndietro.SetActive(false);
             //Cambiare testo dell'button btnReady in "In attesa del server e testo"
             
+
+            
         }
     }
 
+
+    //LISTEING ALL SERVER,
+    private void datiRicevuti(clsMessaggio Msg){
+
+            /*
+                "*STAR*" ==> Loading della scena
+                "*MOVE*" ==> MOVIMENTO LOCALE DI UN PLAYER ONLINE
+
+            */
+            OperazioneSuClient = Msg;
+            Msg.esito = "*TKS";
+            clientSocket.inviaMsgSERVER(Msg.esito);
+            print("Response arrivata con successo");
+
+        }
+
+
+
+
+/*********************************/
+/*********************************/
+//******SWITCHING TRA LE SCENE***//
+/*********************************/
+/********************************/
+
     public void caricamento(){
         //Aggiungere i controlli al campo 
-
-
         PlayerPrefs.SetString("Address", InputField.text);
         print("Addres in ip scene: " + PlayerPrefs.GetString("Address"));
         SceneManager.LoadScene(3);
@@ -156,6 +239,7 @@ public class OnlineController : MonoBehaviour
     public void backToMain(){
         SceneManager.LoadScene(0);
     }
+    //CHIUSURA CONNESSIONE IN CASO NON VOGLIAMO CONTINUARE
     public void backToIp(){
         SceneManager.LoadScene(2);
 
