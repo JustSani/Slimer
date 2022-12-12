@@ -17,21 +17,24 @@ public class OnlineController : MonoBehaviour
 {
     public TextMeshProUGUI InputField;
     public TextMeshProUGUI serverResponse;
-
+    public GameObject btnReady;
+    public GameObject btnIndietro;
+    
     clsSocket clientSocket;
     IPAddress ipServer;
     clsMessaggio msgByServer;
     
+    bool esito = false;
+    string Address;
 
     // Start is called before the first frame update
     void Start()
     {
         string currentScene = SceneManager.GetActiveScene().name;
         if(currentScene == "LoadingMenu"){
-            bool esito = false;
 
             print("Scene loading:" + serverResponse.text);
-            string Address = PlayerPrefs.GetString("Address").ToString();
+            Address = PlayerPrefs.GetString("Address").ToString();
             //Address = "192.168.178.109";
             
             if(Address == ""){
@@ -40,8 +43,8 @@ public class OnlineController : MonoBehaviour
             }
             else
             {
-                Address = Address.Remove(15);
-
+                Address = Address.Remove(Address.Length - 1);
+                print("Address: " + Address);
                 try
                 {
                     ipServer = clsAddress.cercaIP(Address);
@@ -59,7 +62,7 @@ public class OnlineController : MonoBehaviour
 
                     try
                     {
-                        inviaDatiServer("*TEST*");
+                        inviaDatiServer("*JOINING*");
                         esito = true;
                     }
                     catch (Exception ex)
@@ -68,12 +71,16 @@ public class OnlineController : MonoBehaviour
                     }
 
 
-                    if (esito)
-                    {
-                        print("CONNESSO ZIO CAN");
-                    }
+                    
                 }
 
+            }
+            if (esito){
+                btnReady.SetActive(true);
+                btnIndietro.SetActive(true);
+            }else{
+                btnReady.SetActive(false);
+                btnIndietro.SetActive(true);
             }
         
         }
@@ -103,6 +110,39 @@ public class OnlineController : MonoBehaviour
 
     }
 
+    public void btnReadyClick(){
+         esito = false;
+        try
+        {
+            ipServer = clsAddress.cercaIP(Address);
+        }
+        catch (Exception ex)
+        {
+            print("Indirizzo IP non valido : " + ex.Message);
+            //inputField.Focus();
+            ipServer = null;
+        }
+
+        if (ipServer != null)
+        {
+            // provo a Connettermi al SERVER
+            try
+            {
+                inviaDatiServer("*READY*");
+                esito = true;
+            }
+            catch (Exception ex)
+            {
+                print("ATTENZIONE: " + ex.Message);
+            }            
+        }
+        if(esito){
+            btnIndietro.SetActive(false);
+            //Cambiare testo dell'button btnReady in "In attesa del server e testo"
+            
+        }
+    }
+
     public void caricamento(){
         //Aggiungere i controlli al campo 
 
@@ -116,5 +156,50 @@ public class OnlineController : MonoBehaviour
     public void backToMain(){
         SceneManager.LoadScene(0);
     }
+    public void backToIp(){
+        SceneManager.LoadScene(2);
 
+        //Chiusura connessione
+        if(esito){
+            if(Address == ""){
+                print("Empty" + Address);
+                //inputField.Focus();
+            }
+            else
+            {
+                Address = PlayerPrefs.GetString("Address").ToString();
+                Address = Address.Remove(Address.Length - 1);
+                
+                try
+                {
+                    ipServer = clsAddress.cercaIP(Address);
+                }
+                catch (Exception ex)
+                {
+                    print("Indirizzo IP non valido : " + ex.Message);
+                    //inputField.Focus();
+                    ipServer = null;
+                }
+
+                if (ipServer != null)
+                {
+                    // provo a Connettermi al SERVER
+
+                    try
+                    {
+                        inviaDatiServer("*QUITTING*");
+                        esito = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        print("ATTENZIONE: " + ex.Message);
+                    }
+
+
+                    
+                }
+
+            }
+        }
+    }
 }
