@@ -25,7 +25,6 @@ public class OnlineController : MonoBehaviour
     clsSocket clientSocket;
     clsSocket serverSocket;
     IPAddress ipServer;
-    IPAddress myIp;
     clsMessaggio msgByServer;
     
     bool esito = false;
