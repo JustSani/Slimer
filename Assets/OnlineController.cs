@@ -25,6 +25,7 @@ public class OnlineController : MonoBehaviour
     clsSocket clientSocket;
     clsSocket serverSocket;
     IPAddress ipServer;
+    IPAddress myIp;
     clsMessaggio msgByServer;
     
     bool esito = false;
@@ -146,7 +147,7 @@ public class OnlineController : MonoBehaviour
             if (serverSocket == null)
             {
             // Creo l'IP su cui attivare il Server
-            ip = IPAddress.Parse(Address);
+            ip = IPAddress.Any;
 
             // Creo il Server Socket
             serverSocket = new clsSocket(true, Convert.ToInt32(8887), ip);
