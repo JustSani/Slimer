@@ -113,7 +113,7 @@ public class OnlineController : MonoBehaviour
                     //serverSocket.inviaMsgSERVER("Done");
 
                     OperazioneSuClient.messaggio = "";
-                    SceneManager.LoadScene(1);
+                    SceneManager.LoadScene(4);
                     break;
                 case "*MOVE*":
                     //serverSocket.inviaMsgSERVER("Done");
@@ -153,6 +153,8 @@ public class OnlineController : MonoBehaviour
         IPAddress ip;
         bool errore = false;
 
+        
+        
         try
         {
             if (serverSocket == null)
@@ -180,7 +182,6 @@ public class OnlineController : MonoBehaviour
             print("CLIENT LISTENING TO SERVER");
         }
 
-
         esito = false;
         try
         {
@@ -198,7 +199,7 @@ public class OnlineController : MonoBehaviour
             // provo a Connettermi al SERVER
             try
             {
-                inviaDatiServer("*REAY*");
+                serverSocket.inviaMsgSERVER("*REAY*");
                 esito = true;
             }
             catch (Exception ex)
@@ -209,10 +210,9 @@ public class OnlineController : MonoBehaviour
         if(esito){
             btnIndietro.SetActive(false);
             //Cambiare testo dell'button btnReady in "In attesa del server e testo"
-            
-
-            
+                        
         }
+        
     }
 
 
