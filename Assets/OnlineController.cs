@@ -93,6 +93,12 @@ public class OnlineController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        /*
+                "*STAR*" ==> Loading della scena
+                "*MOVE*" ==> MOVIMENTO LOCALE DI UN PLAYER ONLINE
+
+        */
+
         if(OperazioneSuClient.messaggio != ""){
             string tipoRQ;
             string[] vDati;
@@ -102,13 +108,13 @@ public class OnlineController : MonoBehaviour
             switch (tipoRQ)
             {
                 case "*STAR*":
-                    serverSocket.inviaMsgSERVER("Done");
+                    //serverSocket.inviaMsgSERVER("Done");
 
                     OperazioneSuClient.messaggio = "";
                     SceneManager.LoadScene(1);
                     break;
                 case "*MOVE*":
-                    serverSocket.inviaMsgSERVER("Done");
+                    //serverSocket.inviaMsgSERVER("Done");
                     print(OperazioneSuClient.messaggio);
                     
                     break;
@@ -210,15 +216,10 @@ public class OnlineController : MonoBehaviour
 
     //LISTEING ALL SERVER,
     private void datiRicevuti(clsMessaggio Msg){
-
-            /*
-                "*STAR*" ==> Loading della scena
-                "*MOVE*" ==> MOVIMENTO LOCALE DI UN PLAYER ONLINE
-
-            */
+            
             OperazioneSuClient = Msg;
             Msg.esito = "*TKS";
-            clientSocket.inviaMsgSERVER(Msg.esito);
+            serverSocket.inviaMsgSERVER(Msg.esito);
             print("Response arrivata con successo");
 
         }
