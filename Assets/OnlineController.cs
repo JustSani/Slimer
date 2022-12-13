@@ -103,7 +103,9 @@ public class OnlineController : MonoBehaviour
             string tipoRQ;
             string[] vDati;
 
+            
             tipoRQ = OperazioneSuClient.messaggio.Substring(0, 6);
+            print(tipoRQ);
             print("Operazione da eseguire: (" + tipoRQ + ")");
             switch (tipoRQ)
             {
@@ -218,9 +220,8 @@ public class OnlineController : MonoBehaviour
     private void datiRicevuti(clsMessaggio Msg){
             
             OperazioneSuClient = Msg;
-            Msg.esito = "*TKS";
-            serverSocket.inviaMsgSERVER(Msg.esito);
-            print("Response arrivata con successo");
+            serverSocket.inviaMsgSERVER("*TKS");
+            print("Response arrivata con successo:" + OperazioneSuClient.ToString());
 
         }
 
