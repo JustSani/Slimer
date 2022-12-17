@@ -136,7 +136,7 @@ public class PlayerController : MonoBehaviour
 
     public void inviaDatiServer(string strIN){
         // Instanzio il Client Socket
-        clientSocket = new clsSocket(false, Convert.ToInt16(8888), ipServer);
+        clientSocket = new clsSocket(false, Convert.ToInt16(6969), ipServer);
 
         // Invio il Messaggio al Server
         clientSocket.inviaMsgCLIENT(strIN);

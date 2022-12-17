@@ -34,6 +34,18 @@ public class OnlineController : MonoBehaviour
     bool esito = false;
     string Address;
 
+
+    /*
+    *   Da fare: 
+        Risolvere l'avvio del thred do{}while in Start
+        Mandare cordinate corrispettive dal server al client
+    *
+    *
+    *
+    */
+
+
+
     // Start is called before the first frame update
     void Start()
     { 
@@ -54,7 +66,12 @@ public class OnlineController : MonoBehaviour
 
             btnReady.SetActive(false);
         }
+
+        
+
+        //IL GAME OBJECT CON loadScene non ricaric alo start, DA FIXARE
         if(SceneManager.GetActiveScene().name == "MultiplayerMap"){
+            print("ASKING FOR NEWS");
             try { ipServer = clsAddress.cercaIP(getIp()); }
             catch (Exception ex) {
                 print("Indirizzo IP non valido : " + ex.Message);
@@ -112,9 +129,10 @@ public class OnlineController : MonoBehaviour
                     rispostaServer.text = OperazioneSuClient.messaggio.Split("@")[1].Split("&")[0];
                     PlayerPrefs.SetString("Player", OperazioneSuClient.messaggio.Split("&")[1]);
 
-                    
+
                     //stoppo la connessione
                     requests.Abort();
+                    connessione.Abort();
                     //Switch di scena
                     SceneManager.LoadScene(4);
 
