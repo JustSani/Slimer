@@ -41,7 +41,6 @@ public class OnlineController : MonoBehaviour
         OperazioneSuClient.messaggio = "";
 
         if(SceneManager.GetActiveScene().name == "LoadingMenu"){
-            
             // ricerca del ip in input
             try { ipServer = clsAddress.cercaIP(getIp()); }
             catch (Exception ex) {
@@ -54,6 +53,17 @@ public class OnlineController : MonoBehaviour
             connessione.Start();
 
             btnReady.SetActive(false);
+        }
+        if(SceneManager.GetActiveScene().name == "MultiplayerMap"){
+            try { ipServer = clsAddress.cercaIP(getIp()); }
+            catch (Exception ex) {
+                print("Indirizzo IP non valido : " + ex.Message);
+                ipServer = null; }
+
+            // Invio del primo messaggio tramite un thread
+            msgToSend = "*NEWS*";
+            connessione = new Thread(new ThreadStart(MakeRequest));
+            connessione.Start();
         }
     }    
 
@@ -99,7 +109,10 @@ public class OnlineController : MonoBehaviour
                     break;
                 case "START":
                     newMsg = false;
-                    rispostaServer.text = OperazioneSuClient.messaggio.Split("@")[1];
+                    rispostaServer.text = OperazioneSuClient.messaggio.Split("@")[1].Split("&")[0];
+                    PlayerPrefs.SetString("Player", OperazioneSuClient.messaggio.Split("&")[1]);
+
+                    
                     //stoppo la connessione
                     requests.Abort();
                     //Switch di scena

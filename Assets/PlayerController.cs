@@ -39,6 +39,10 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if(SceneManager.GetActiveScene().name != "MultplayerMap"){
+            print("Im player number: " + PlayerPrefs.GetString("Player"));
+        }
     }
 
     // BETTER FOR PHYSICS
@@ -95,6 +99,8 @@ public class PlayerController : MonoBehaviour
                     catch (Exception ex)
                     {
                         print("Indirizzo IP non valido : " + ex.Message);
+                        SceneManager.LoadScene(0);
+
                         //inputField.Focus();
                         ipServer = null;
                     }
@@ -110,6 +116,7 @@ public class PlayerController : MonoBehaviour
                         catch (Exception ex)
                         {
                             print("ATTENZIONE: " + ex.Message);
+                            SceneManager.LoadScene(0);
                         }
 
                     }
