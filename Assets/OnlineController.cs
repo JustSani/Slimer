@@ -69,10 +69,6 @@ public class OnlineController : MonoBehaviour
             print("Operazione da eseguire: (" + tipoRQ + ")");
             switch (tipoRQ)
             {
-                case "STAR":
-                    newMsg = false;
-                    SceneManager.LoadScene(4);
-                    break;
                 // Movimento di un Giocatore
                 case "MOVE":
                     newMsg = false;
@@ -101,6 +97,17 @@ public class OnlineController : MonoBehaviour
                     requests.Start();
 
                     break;
+                case "START":
+                    newMsg = false;
+                    rispostaServer.text = OperazioneSuClient.messaggio.Split("@")[1];
+                    //stoppo la connessione
+                    requests.Abort();
+                    //Switch di scena
+                    SceneManager.LoadScene(4);
+
+
+                break;
+                
                 case "WAIT":
                     rispostaServer.text = OperazioneSuClient.messaggio.Split("@")[1];
                     break;
