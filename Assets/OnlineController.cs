@@ -23,7 +23,6 @@ public class OnlineController : MonoBehaviour
     clsMessaggio OperazioneSuClient = new clsMessaggio();
 
     clsSocket clientSocket;
-    clsSocket serverSocket;
     IPAddress ipServer;
     clsMessaggio msgByServer;
     
@@ -38,47 +37,14 @@ public class OnlineController : MonoBehaviour
 
         //SE CI TROVIAMO NELLA SCENA DI LOADING, INVIAMO LA RICHIESTA DI PARTECIPAZIONE ALLA PARTITA
         if(currentScene == "LoadingMenu"){
+<<<<<<< Updated upstream
 
             print("Scene loading:" + serverResponse.text);
             Address = PlayerPrefs.GetString("Address").ToString();
             //Address = "192.168.178.109";
+=======
+>>>>>>> Stashed changes
             
-            if(Address == ""){
-                print("Empty" + Address);
-                //inputField.Focus();
-            }
-            else
-            {
-                Address = Address.Remove(Address.Length - 1);
-                print("Address: " + Address);
-                try
-                {
-                    ipServer = clsAddress.cercaIP(Address);
-                }
-                catch (Exception ex)
-                {
-                    print("Indirizzo IP non valido : " + ex.Message);
-                    //inputField.Focus();
-                    ipServer = null;
-                }
-
-                if (ipServer != null)
-                {
-                    // provo a Connettermi al SERVER
-
-                    try
-                    {
-                        inviaDatiServer("*JOIN*");
-                        esito = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        print("ATTENZIONE: " + ex.Message);
-                    }
-
-                }
-
-            }
             if (esito){
                 btnReady.SetActive(true);
                 btnIndietro.SetActive(true);
@@ -93,15 +59,18 @@ public class OnlineController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+<<<<<<< Updated upstream
         /*
                 "*STAR*" ==> Loading della scena
                 "*MOVE*" ==> MOVIMENTO LOCALE DI UN PLAYER ONLINE
 
         */
 
+=======
+        // Aspettiamo una risposta dal server
+>>>>>>> Stashed changes
         if(OperazioneSuClient.messaggio != ""){
-            string tipoRQ;
-            string[] vDati;
+            string tipoRQ;;
 
             
             tipoRQ = OperazioneSuClient.messaggio.Substring(0, 6);
@@ -110,13 +79,16 @@ public class OnlineController : MonoBehaviour
             switch (tipoRQ)
             {
                 case "*STAR*":
+<<<<<<< Updated upstream
                     //serverSocket.inviaMsgSERVER("Done");
 
+=======
+                    
+>>>>>>> Stashed changes
                     OperazioneSuClient.messaggio = "";
                     SceneManager.LoadScene(4);
                     break;
                 case "*MOVE*":
-                    //serverSocket.inviaMsgSERVER("Done");
                     print(OperazioneSuClient.messaggio);
                     
                     break;
@@ -127,27 +99,31 @@ public class OnlineController : MonoBehaviour
         }
     }
 
+<<<<<<< Updated upstream
     public void inviaDatiServer(string strIN){
             // Instanzio il Client Socket
             clientSocket = new clsSocket(false, Convert.ToInt16(8888), ipServer);
 
+=======
+    public void inviaDatiServer(string strIN, IPAddress server){
+            // Instanzio il Client Socket            
+            clientSocket = new clsSocket(false, 8888, server);
+            
+>>>>>>> Stashed changes
             // Invio il Messaggio al Server
             clientSocket.inviaMsgCLIENT(strIN);
 
             // Aspetto il Messaggio di Risposta del Server
-            msgByServer = clientSocket.clientRicevi();
-
-            // Aggiungo alla Lista la Risposta del Server
-            print("Response: " + msgByServer.ToString());
+            OperazioneSuClient = clientSocket.clientRicevi();          // --> CONTIENE RISPOSTA
 
             // Chiudo il Socket
             clientSocket.Dispose();
 
     }
-
-    //NEL CASO IN CUI SIAMO PRONTI LO COMUNICHIAMO AL SERVER E CI METTIAMO IN ASCOLTO 
-    //PER INIZIARE LA PARTITA
+    
+    // comunichiamo al server che siamo pronti e ogni 200ms dobbiamo chiedere al server un aggiornamento
     public void btnReadyClick(){
+<<<<<<< Updated upstream
         //MI METTO IN ASCOLTO DI UNA RISPOSTA DAL SERVER PER QUANDO INIZIA LA PARTITA
         //EFFETIVO INIZIO DEL DIALOGO TRA CLIENT E SERVER NELLA QUALE OGNIUNO ASCOLTA
         IPAddress ip;
@@ -183,36 +159,55 @@ public class OnlineController : MonoBehaviour
         }
 
         esito = false;
+=======
+    
+        
+
+    }
+
+    public bool sendMsg(string s){
+        bool esito = false;
+>>>>>>> Stashed changes
         try
         {
-            ipServer = clsAddress.cercaIP(Address);
+            ipServer = clsAddress.cercaIP(ipPrefs());
         }
         catch (Exception ex)
         {
-            print("Indirizzo IP non valido : " + ex.Message);
-            //inputField.Focus();
             ipServer = null;
+            esito = false;
         }
 
         if (ipServer != null)
         {
             // provo a Connettermi al SERVER
+
             try
             {
+<<<<<<< Updated upstream
                 serverSocket.inviaMsgSERVER("*REAY*");
+=======
+                inviaDatiServer(s, ipServer);
+>>>>>>> Stashed changes
                 esito = true;
             }
             catch (Exception ex)
             {
-                print("ATTENZIONE: " + ex.Message);
-            }            
+                esito = false;
+            }
         }
+<<<<<<< Updated upstream
         if(esito){
             btnIndietro.SetActive(false);
             //Cambiare testo dell'button btnReady in "In attesa del server e testo"
                         
         }
         
+=======
+
+        return esito;
+            
+>>>>>>> Stashed changes
     }
 
 
@@ -223,15 +218,18 @@ public class OnlineController : MonoBehaviour
             serverSocket.inviaMsgSERVER("*TKS");
             print("Response arrivata con successo:" + OperazioneSuClient.ToString());
 
-        }
+
+    }
 
 
 
-
-/*********************************/
+    //fixare
+    public string ipPrefs(){
+        string address = PlayerPrefs.GetString("Address");
+        return address.Remove(address.Length - 1).ToString();
+    }
 /*********************************/
 //******SWITCHING TRA LE SCENE***//
-/*********************************/
 /********************************/
 
     public void caricamento(){
@@ -239,6 +237,19 @@ public class OnlineController : MonoBehaviour
         PlayerPrefs.SetString("Address", InputField.text);
         print("Addres in ip scene: " + PlayerPrefs.GetString("Address"));
         SceneManager.LoadScene(3);
+        
+        bool esito = sendMsg("*TESTS");
+        if (esito)
+        {
+            print("Esito andato con successo");
+            // IN ATTESA DEI GIOCATORI COLLEGATI
+
+            //switch di scenaManager
+        }
+        else{
+            
+            print("Esito andato NON successo");
+        }
 
     }
 
@@ -251,45 +262,7 @@ public class OnlineController : MonoBehaviour
 
         //Chiusura connessione
         if(esito){
-            if(Address == ""){
-                print("Empty" + Address);
-                //inputField.Focus();
-            }
-            else
-            {
-                Address = PlayerPrefs.GetString("Address").ToString();
-                Address = Address.Remove(Address.Length - 1);
-                
-                try
-                {
-                    ipServer = clsAddress.cercaIP(Address);
-                }
-                catch (Exception ex)
-                {
-                    print("Indirizzo IP non valido : " + ex.Message);
-                    //inputField.Focus();
-                    ipServer = null;
-                }
-
-                if (ipServer != null)
-                {
-                    // provo a Connettermi al SERVER
-
-                    try
-                    {
-                        inviaDatiServer("*QUIT*");
-                        esito = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        print("ATTENZIONE: " + ex.Message);
-                    }
-
-
-                    
-                }
-
-            }
+            
         }
     }
 }
