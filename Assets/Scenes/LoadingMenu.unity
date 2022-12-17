@@ -365,9 +365,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InputField: {fileID: 0}
-  serverResponse: {fileID: 1536307000}
   btnReady: {fileID: 66130928}
   btnIndietro: {fileID: 1088976136}
+  barraCaricamento: {fileID: 1405601103}
+  Titolo: {fileID: 1334037992}
+  rispostaServer: {fileID: 1536307000}
 --- !u!4 &634453532
 Transform:
   m_ObjectHideFlags: 0
@@ -1282,6 +1284,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 75c4353c4b4125549b782a72884bedd4, type: 3}
+--- !u!1 &1405601103 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100006, guid: 75c4353c4b4125549b782a72884bedd4, type: 3}
+  m_PrefabInstance: {fileID: 1405601102}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1536306998
 GameObject:
   m_ObjectHideFlags: 0

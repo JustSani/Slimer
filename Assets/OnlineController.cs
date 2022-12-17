@@ -16,74 +16,144 @@ using TMPro;
 public class OnlineController : MonoBehaviour
 {
     public TextMeshProUGUI InputField;
-    public TextMeshProUGUI serverResponse;
     public GameObject btnReady;
-    public GameObject btnIndietro;
+    public GameObject btnIndietro;    
+    public GameObject barraCaricamento;
+    public TextMeshProUGUI Titolo;
+    public TextMeshProUGUI rispostaServer;
     
-    clsMessaggio OperazioneSuClient = new clsMessaggio();
-
+    clsMessaggio OperazioneSuClient;
     clsSocket clientSocket;
-    clsSocket serverSocket;
     IPAddress ipServer;
-    clsMessaggio msgByServer;
-    
+
+    Thread requests;
+    Thread connessione;
+    string msgToSend;
+    bool newMsg;
+
     bool esito = false;
     string Address;
 
     // Start is called before the first frame update
     void Start()
-    {
+    { 
+        OperazioneSuClient = new clsMessaggio();
         OperazioneSuClient.messaggio = "";
-        string currentScene = SceneManager.GetActiveScene().name;
 
-        //SE CI TROVIAMO NELLA SCENA DI LOADING, INVIAMO LA RICHIESTA DI PARTECIPAZIONE ALLA PARTITA
-        if(currentScene == "LoadingMenu"){
+        if(SceneManager.GetActiveScene().name == "LoadingMenu"){
+            
+            // ricerca del ip in input
+            try { ipServer = clsAddress.cercaIP(getIp()); }
+            catch (Exception ex) {
+                print("Indirizzo IP non valido : " + ex.Message);
+                ipServer = null; }
 
+            // Invio del primo messaggio tramite un thread
+            msgToSend = "*TEST*";
+            connessione = new Thread(new ThreadStart(MakeRequest));
+            connessione.Start();
 
-            if (esito){
-                btnReady.SetActive(true);
-                btnIndietro.SetActive(true);
-            }else{
-                btnReady.SetActive(false);
-                btnIndietro.SetActive(true);
-            }
-        
+            btnReady.SetActive(false);
         }
-    }
+    }    
 
     // Update is called once per frame
     void Update()
-    {
+    { 
         /*
-                "*STAR*" ==> Loading della scena
-                "*MOVE*" ==> MOVIMENTO LOCALE DI UN PLAYER ONLINE
-
+            "*STAR*" ==> Loading della scena
+            "*MOVE*" ==> MOVIMENTO LOCALE DI UN PLAYER ONLINE
         */
-
-        if(OperazioneSuClient.messaggio != ""){
-            string tipoRQ;
-            string[] vDati;
-
-            
-            tipoRQ = OperazioneSuClient.messaggio.Substring(0, 6);
-            print(tipoRQ);
+        if(newMsg){                        
+            string tipoRQ = OperazioneSuClient.messaggio.Split("*")[1];
             print("Operazione da eseguire: (" + tipoRQ + ")");
             switch (tipoRQ)
             {
-                case "*STAR*":
-                    //serverSocket.inviaMsgSERVER("Done");
-
-                    OperazioneSuClient.messaggio = "";
+                case "STAR":
+                    newMsg = false;
                     SceneManager.LoadScene(4);
                     break;
-                case "*MOVE*":
-                    //serverSocket.inviaMsgSERVER("Done");
-                    print(OperazioneSuClient.messaggio);
+                // Movimento di un Giocatore
+                case "MOVE":
+                    newMsg = false;
+                    break;
+                // Prima connessione riuscita con successo
+                case "CONN":
+                    Titolo.text = "LOBBY TROVATA";
+                    rispostaServer.text = OperazioneSuClient.messaggio.Split("@")[1];
+                    newMsg = false;
+                    barraCaricamento.SetActive(false);
+                    btnReady.SetActive(true);
+                    break;
+                // Tu sei pronto, in attesa di altri giocatori 
+                case "READY":
+                    newMsg = false;
+                    Titolo.text = "ATTENDI";
+                    btnReady.SetActive(false);
+                    barraCaricamento.SetActive(true);
+                    btnIndietro.SetActive(false);
                     
+
+                    // Start di un Thread che fa continue richiesta al server per sapere 
+                    // se ce una risposta
+                    msgToSend = "*ASKING*";
+                    requests = new Thread(new ThreadStart(AskingServer));
+                    requests.Start();
+
+                    break;
+                case "WAIT":
+                    rispostaServer.text = OperazioneSuClient.messaggio.Split("@")[1];
                     break;
                 default:
-                        OperazioneSuClient.esito = "ERR_TXRQ";
+                    newMsg = false;
+                    OperazioneSuClient.esito = "ERR_TXRQ";
                     break;
+            }
+        }
+    }
+
+    
+
+    //NEL CASO IN CUI SIAMO PRONTI LO COMUNICHIAMO AL SERVER E CI METTIAMO IN ASCOLTO 
+    //PER INIZIARE LA PARTITA
+    public void btnReadyClick(){
+        
+        // Invio del primo messaggio tramite un thread
+        esito = false;
+        msgToSend = "*READY*";
+        connessione = new Thread(new ThreadStart(MakeRequest));
+        connessione.Start();
+
+    }
+
+    ///////////////////////////////////
+    //    GESTIONE CONNNESSIONI     //
+    ///////////////////////////////////
+
+    public void AskingServer(){
+        int i = 0;
+        do {
+            esito = false;
+            MakeRequest();
+            Thread.Sleep(200);
+            i++;
+            if(!esito)
+                requests.Abort();
+        }while(esito);
+    }
+    
+    public void MakeRequest(){
+        if (ipServer != null)
+        {
+            // provo a Connettermi al SERVER
+            try
+            {
+                inviaDatiServer(msgToSend);
+                esito = true;
+            }
+            catch (Exception ex)
+            {
+                print("ATTENZIONE: " + ex.Message);
             }
         }
     }
@@ -96,53 +166,30 @@ public class OnlineController : MonoBehaviour
             clientSocket.inviaMsgCLIENT(strIN);
 
             // Aspetto il Messaggio di Risposta del Server
-            msgByServer = clientSocket.clientRicevi();
+            clsMessaggio msgByServer = clientSocket.clientRicevi();
 
-            // Aggiungo alla Lista la Risposta del Server
-            print("Response: " + msgByServer.ToString());
+            // METTO IN LISTA LA NUOVA TASK DA ESEGUIRE
+            OperazioneSuClient.messaggio = msgByServer.messaggio;
+
+            //Segnalo nuovo messaggio
+            newMsg = true;
 
             // Chiudo il Socket
             clientSocket.Dispose();
 
+            //Uccido il thread
+            connessione.Abort();
     }
 
-    //NEL CASO IN CUI SIAMO PRONTI LO COMUNICHIAMO AL SERVER E CI METTIAMO IN ASCOLTO 
-    //PER INIZIARE LA PARTITA
-    public void btnReadyClick(){
-        //MI METTO IN ASCOLTO DI UNA RISPOSTA DAL SERVER PER QUANDO INIZIA LA PARTITA
-        //EFFETIVO INIZIO DEL DIALOGO TRA CLIENT E SERVER NELLA QUALE OGNIUNO ASCOLTA
-        IPAddress ip;
-        bool errore = false;
-
-        
-        
-
-        if(esito){
-            btnIndietro.SetActive(false);
-            //Cambiare testo dell'button btnReady in "In attesa del server e testo"
-                        
-        }
-        
+    public string getIp(){
+        string s = PlayerPrefs.GetString("Address");
+        return s.Remove(s.Length - 1);
     }
 
 
-    //LISTEING ALL SERVER,
-    private void datiRicevuti(clsMessaggio Msg){
-            
-            OperazioneSuClient = Msg;
-            
-            print("Response arrivata con successo:" + OperazioneSuClient.ToString());
-
-        }
-
-
-
-
-/*********************************/
-/*********************************/
-//******SWITCHING TRA LE SCENE***//
-/*********************************/
-/********************************/
+    ///////////////////////////////////
+    //    SWITCHING TRA LE SCENE     //
+    ///////////////////////////////////
 
     public void caricamento(){
         //Aggiungere i controlli al campo 
@@ -160,7 +207,6 @@ public class OnlineController : MonoBehaviour
         SceneManager.LoadScene(2);
 
         //Chiusura connessione
-       
     }
 
     
