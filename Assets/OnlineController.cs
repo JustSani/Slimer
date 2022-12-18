@@ -28,6 +28,7 @@ public class OnlineController : MonoBehaviour
 
     Thread requests;
     Thread connessione;
+    bool loopRequests = false;
     string msgToSend;
     bool newMsg;
 
@@ -46,9 +47,10 @@ public class OnlineController : MonoBehaviour
 
 
 
-    // Start is called before the first frame update
-    void Start()
+    // Awake is called avery scene switch
+    void Awake()
     { 
+        print("Time to change scene");
         OperazioneSuClient = new clsMessaggio();
         OperazioneSuClient.messaggio = "";
 
@@ -61,15 +63,13 @@ public class OnlineController : MonoBehaviour
 
             // Invio del primo messaggio tramite un thread
             msgToSend = "*TEST*";
+            loopRequests = false;
             connessione = new Thread(new ThreadStart(MakeRequest));
             connessione.Start();
 
             btnReady.SetActive(false);
         }
 
-        
-
-        //IL GAME OBJECT CON loadScene non ricaric alo start, DA FIXARE
         if(SceneManager.GetActiveScene().name == "MultiplayerMap"){
             print("ASKING FOR NEWS");
             try { ipServer = clsAddress.cercaIP(getIp()); }
@@ -79,10 +79,11 @@ public class OnlineController : MonoBehaviour
 
             // Invio del primo messaggio tramite un thread
             msgToSend = "*NEWS*";
-            connessione = new Thread(new ThreadStart(MakeRequest));
-            connessione.Start();
+            loopRequests = true;
+            requests = new Thread(new ThreadStart(AskingServer));
+            requests.Start();
         }
-    }    
+    }
 
     // Update is called once per frame
     void Update()
@@ -120,6 +121,7 @@ public class OnlineController : MonoBehaviour
                     // Start di un Thread che fa continue richiesta al server per sapere 
                     // se ce una risposta
                     msgToSend = "*ASKING*";
+                    loopRequests = true;
                     requests = new Thread(new ThreadStart(AskingServer));
                     requests.Start();
 
@@ -135,12 +137,16 @@ public class OnlineController : MonoBehaviour
                     connessione.Abort();
                     //Switch di scena
                     SceneManager.LoadScene(4);
-
-
                 break;
                 
                 case "WAIT":
+                    newMsg = false;
                     rispostaServer.text = OperazioneSuClient.messaggio.Split("@")[1];
+                    break;
+
+                case "ERROR":
+                    print("Errore: nessuna risposta (messaggio generato dal client");
+                    SceneManager.LoadScene(0);
                     break;
                 default:
                     newMsg = false;
@@ -159,6 +165,7 @@ public class OnlineController : MonoBehaviour
         // Invio del primo messaggio tramite un thread
         esito = false;
         msgToSend = "*READY*";
+        loopRequests = false;
         connessione = new Thread(new ThreadStart(MakeRequest));
         connessione.Start();
 
@@ -191,9 +198,15 @@ public class OnlineController : MonoBehaviour
             }
             catch (Exception ex)
             {
+                esito = false;
                 print("ATTENZIONE: " + ex.Message);
+                newMsg = true;
+                OperazioneSuClient.messaggio = "*ERROR*@No response";
             }
         }
+        if(!loopRequests)
+        //Uccido il thread nel caso in cui non dobbiamo richbiedere all infinito
+        connessione.Abort();
     }
 
     public void inviaDatiServer(string strIN){
@@ -215,8 +228,7 @@ public class OnlineController : MonoBehaviour
             // Chiudo il Socket
             clientSocket.Dispose();
 
-            //Uccido il thread
-            connessione.Abort();
+            
     }
 
     public string getIp(){

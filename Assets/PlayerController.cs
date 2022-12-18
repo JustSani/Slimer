@@ -91,7 +91,7 @@ public class PlayerController : MonoBehaviour
                 if(SceneManager.GetActiveScene().name != "SinglePlayerTestScene"){
                     string Address = PlayerPrefs.GetString("Address").ToString();
                     Address = Address.Remove(Address.Length - 1);
-                    print("Address: " + Address);
+                    print("Address: " + Address + ", len is " + Address.Length);
                     try
                     {
                         ipServer = clsAddress.cercaIP(Address);
@@ -136,11 +136,11 @@ public class PlayerController : MonoBehaviour
 
     public void inviaDatiServer(string strIN){
         // Instanzio il Client Socket
-        clientSocket = new clsSocket(false, Convert.ToInt16(6969), ipServer);
+        clientSocket = new clsSocket(false, 8888, ipServer);
 
+        print("Sended: " + ipServer.ToString());
         // Invio il Messaggio al Server
         clientSocket.inviaMsgCLIENT(strIN);
-
         // Aspetto il Messaggio di Risposta del Server
         msgByServer = clientSocket.clientRicevi();
 
