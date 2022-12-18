@@ -38,12 +38,13 @@ public class PlayerTwoController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if(movementRequest != Vector2.zero){
             //rb.transform.position.x = movementRequest.x;
             //rb.transform.position.y = movementRequest.y;    
-            playerTwo.transform.position = new Vector2(movementRequest.x, movementRequest.y);
+            print("X:" + movementRequest.x + ",  Y:" + movementRequest.y);
+            playerTwo.transform.position = new Vector3(movementRequest.x, movementRequest.y);
         }
     }
 
@@ -53,7 +54,7 @@ public class PlayerTwoController : MonoBehaviour
         do {
             esito = false;
             MakeRequest();
-            Thread.Sleep(20);
+            Thread.Sleep(50);
             i++;
             if(!esito)
                 requests.Abort();
@@ -92,7 +93,7 @@ public class PlayerTwoController : MonoBehaviour
             clsMessaggio msgByServer = clientSocket.clientRicevi();
 
             // Salvo le nuove coordinate
-            movementRequest.x = float.Parse(msgByServer.messaggio.Split(":")[1].Split(",")[0]);
+            movementRequest.x = float.Parse(msgByServer.messaggio.Split(":")[1].Split("#")[0]);
             movementRequest.y = float.Parse(msgByServer.messaggio.Split(":")[2]);
 
 
