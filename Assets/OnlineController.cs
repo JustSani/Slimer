@@ -70,19 +70,6 @@ public class OnlineController : MonoBehaviour
             btnReady.SetActive(false);
         }
 
-        if(SceneManager.GetActiveScene().name == "MultiplayerMap"){
-            print("ASKING FOR NEWS");
-            try { ipServer = clsAddress.cercaIP(getIp()); }
-            catch (Exception ex) {
-                print("Indirizzo IP non valido : " + ex.Message);
-                ipServer = null; }
-
-            // Invio del primo messaggio tramite un thread
-            msgToSend = "*NEWS*";
-            loopRequests = true;
-            requests = new Thread(new ThreadStart(AskingServer));
-            requests.Start();
-        }
     }
 
     // Update is called once per frame
@@ -231,7 +218,7 @@ public class OnlineController : MonoBehaviour
             
     }
 
-    public string getIp(){
+    public static string getIp(){
         string s = PlayerPrefs.GetString("Address");
         return s.Remove(s.Length - 1);
     }
