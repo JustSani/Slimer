@@ -30,7 +30,9 @@ public class PlayerTwoController : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        
+        rb = GetComponent<Rigidbody2D>();
+
+
         print("ASKING FOR NEWS");
             try { ipServer = clsAddress.cercaIP(getIp()); }
             catch (Exception ex) {
@@ -65,7 +67,7 @@ public class PlayerTwoController : MonoBehaviour
         do {
             esito = false;
             MakeRequest();
-            Thread.Sleep(200);
+            Thread.Sleep(20);
             i++;
             if(!esito)
                 requests.Abort();
@@ -104,10 +106,9 @@ public class PlayerTwoController : MonoBehaviour
             // Aspetto il Messaggio di Risposta del Server
             clsMessaggio msgByServer = clientSocket.clientRicevi();
 
-            // METTO IN LISTA LA NUOVA TASK DA ESEGUIRE
-            OperazioneSuClient.messaggio = msgByServer.messaggio;
-            movementRequest.x = float.Parse(OperazioneSuClient.messaggio.Split(":")[1].Split(",")[0]);
-            movementRequest.y = float.Parse(OperazioneSuClient.messaggio.Split(":")[2]);
+            // Salvo le nuove coordinate
+            movementRequest.x = float.Parse(msgByServer.messaggio.Split(":")[1].Split(",")[0]);
+            movementRequest.y = float.Parse(msgByServer.messaggio.Split(":")[2]);
 
             //Segnalo nuovo messaggio
             newMsg = true;
