@@ -8,14 +8,8 @@ using System.Net.Sockets;
 using System;
 public class PlayerTwoController : MonoBehaviour
 {
-    
+    public GameObject playerTwo;
     Vector2 movementRequest;
-    public float moveSpeed = 1f;
-    public ContactFilter2D movementFilter;
-    public float collisionOffset = 0.05f;
-    Rigidbody2D rb;
-    List<RaycastHit2D> castCollisions = new List<RaycastHit2D>();
-
 
     Thread requests;
     clsSocket clientSocket;
@@ -23,16 +17,13 @@ public class PlayerTwoController : MonoBehaviour
     string msgToSend;
     bool loopRequests = false;
     bool esito;
-    bool newMsg;
     Thread connessione;
     clsMessaggio OperazioneSuClient;
 
     // Start is called before the first frame update
     void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-
-
+        
         print("ASKING FOR NEWS");
             try { ipServer = clsAddress.cercaIP(getIp()); }
             catch (Exception ex) {
@@ -50,14 +41,9 @@ public class PlayerTwoController : MonoBehaviour
     void Update()
     {
         if(movementRequest != Vector2.zero){
-            int count = rb.Cast(
-                movementRequest, // X and Y values between-1 and 1 that rappresent the direction from the body to look fopr collisions
-                movementFilter, // the settings that determine where a collision can occur on such as layers to coluide with
-                castCollisions, // List of collisions to store the found collisions into after the Cast is finished
-                moveSpeed * Time.fixedDeltaTime + collisionOffset); // The amouynt to cast equal to the movement polus an offset
-            if(count == 0){
-                rb.MovePosition(rb.position + movementRequest * moveSpeed * Time.fixedDeltaTime);
-            }
+            //rb.transform.position.x = movementRequest.x;
+            //rb.transform.position.y = movementRequest.y;    
+            playerTwo.transform.position = new Vector2(movementRequest.x, movementRequest.y);
         }
     }
 
@@ -87,7 +73,6 @@ public class PlayerTwoController : MonoBehaviour
             {
                 esito = false;
                 print("ATTENZIONE: " + ex.Message);
-                newMsg = true;
                 OperazioneSuClient.messaggio = "*ERROR*@No response";
             }
         }
@@ -110,8 +95,6 @@ public class PlayerTwoController : MonoBehaviour
             movementRequest.x = float.Parse(msgByServer.messaggio.Split(":")[1].Split(",")[0]);
             movementRequest.y = float.Parse(msgByServer.messaggio.Split(":")[2]);
 
-            //Segnalo nuovo messaggio
-            newMsg = true;
 
             // Chiudo il Socket
             clientSocket.Dispose();

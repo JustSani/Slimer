@@ -111,7 +111,7 @@ public class PlayerController : MonoBehaviour
 
                         try
                         {
-                            inviaDatiServer("*SEND*@X:" + direction.x + ",Y:"+ direction.y);
+                            inviaDatiServer("*SEND*@X:" + rb.position.x + ",Y:"+ rb.position.y);
                         }
                         catch (Exception ex)
                         {
