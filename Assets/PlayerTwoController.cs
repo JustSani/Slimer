@@ -8,6 +8,8 @@ using System.Net.Sockets;
 using System;
 public class PlayerTwoController : MonoBehaviour
 {
+
+    Rigidbody2D rb;
     public GameObject playerTwo;
     Vector2 movementRequest;
 
@@ -23,6 +25,7 @@ public class PlayerTwoController : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        rb = GetComponent<Rigidbody2D>();
         
         print("ASKING FOR NEWS");
             try { ipServer = clsAddress.cercaIP(getIp()); }
@@ -44,7 +47,8 @@ public class PlayerTwoController : MonoBehaviour
             //rb.transform.position.x = movementRequest.x;
             //rb.transform.position.y = movementRequest.y;    
             print("X:" + movementRequest.x + ",  Y:" + movementRequest.y);
-            playerTwo.transform.position = new Vector3(movementRequest.x, movementRequest.y);
+            //playerTwo.transform.position = new Vector3(movementRequest.x, movementRequest.y);
+            rb.MovePosition(rb.position + new Vector2(movementRequest.x - rb.position.x, movementRequest.y - rb.position.y) * 1f );
         }
     }
 
