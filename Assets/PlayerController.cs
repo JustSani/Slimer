@@ -16,6 +16,8 @@ using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
+    public GameObject Canvas;
+    bool menu;
     
     IPAddress ipServer;
     clsSocket clientSocket;
@@ -33,10 +35,14 @@ public class PlayerController : MonoBehaviour
     Animator animator;
     bool canMove = true;
 
+
+
     // Start is called before the first frame update
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        menu = false;
+
+        rb = GetComponent<Rigidbody2D>();   
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
@@ -133,6 +139,20 @@ public class PlayerController : MonoBehaviour
     void OnMove(InputValue movementValue){
         movementInput = movementValue.Get<Vector2>();
     }
+
+    void OnExit(){
+        menu = !menu;
+        Canvas.SetActive(menu);
+    }
+
+    public void btnSiClick(){
+        SceneManager.LoadScene(0);
+    }
+    public void btnNoClick(){
+        menu = !menu;
+        Canvas.SetActive(menu);
+    }
+
 
     public void inviaDatiServer(string strIN){
         // Instanzio il Client Socket
