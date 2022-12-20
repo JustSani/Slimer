@@ -9,6 +9,7 @@ using System;
 public class PlayerTwoController : MonoBehaviour
 {
 
+    GameObject Slime;
     Rigidbody2D rb;
     public GameObject playerTwo;
     Vector2 movementRequest;
@@ -54,6 +55,12 @@ public class PlayerTwoController : MonoBehaviour
     void FixedUpdate(){
         if(slimeKilled != ""){
             print("A slime was just killed: " + slimeKilled);
+            
+            Slime = GameObject.Find(slimeKilled);
+            Enemy enemy = Slime.GetComponent<Enemy>();
+            print("A slime was just killed: " + enemy.name());
+            enemy.Health -= 3;
+            
             slimeKilled = "";
         }
         if(isFire){
