@@ -50,10 +50,10 @@ public class PlayerTwoController : MonoBehaviour
 
     // Update is called once per frame
     void FixedUpdate(){
-        if(isFire)
-            animator.SetBool("TwoisFireing",true);
-        else
-            animator.SetBool("TwoisFireing",false);
+        if(isFire){
+            animator.SetTrigger("TwoisFireing");
+            isFire = false;
+        }
         if(isMov)
             animator.SetBool("TwoisMoving",true);
         else
