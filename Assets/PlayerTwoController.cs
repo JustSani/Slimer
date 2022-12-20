@@ -77,7 +77,7 @@ public class PlayerTwoController : MonoBehaviour
             spriteRenderer.flipX = false;
 
         if(animator.GetBool("TwoisMoving")){
-            print("X:" + movementRequest.x + ",  Y:" + movementRequest.y);
+            //print("X:" + movementRequest.x + ",  Y:" + movementRequest.y);
             
             rb.MovePosition(movementRequest);   
         
@@ -144,11 +144,9 @@ public class PlayerTwoController : MonoBehaviour
 
                 if(movementRequestSaved != movementRequest){
                     isMov = true;
-                    print("Moving");
                 }
                 else{
                     isMov = false;
-                    print("Static");
                 }
                 if(movementRequest.x < movementRequestSaved.x)
                     flip = true;

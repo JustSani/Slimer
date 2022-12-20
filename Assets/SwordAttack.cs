@@ -71,7 +71,7 @@ public class SwordAttack : MonoBehaviour
 
                         try
                         {
-                            inviaDatiServer("*SEND*@KILLED-"+ enemy.name() + "-");
+                            inviaDatiServer("*SEND*@FIRE&KILLED-"+ enemy.name() + "-");
                         }
                         catch (Exception ex)
                         {
