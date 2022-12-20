@@ -15,6 +15,7 @@ public class PlayerTwoController : MonoBehaviour
     Vector2 movementRequestSaved;
     SpriteRenderer spriteRenderer;
     Animator animator;
+    bool isFire;
     bool isMov;
     bool flip;
 
@@ -49,6 +50,10 @@ public class PlayerTwoController : MonoBehaviour
 
     // Update is called once per frame
     void FixedUpdate(){
+        if(isFire)
+            animator.SetBool("TwoisFireing",true);
+        else
+            animator.SetBool("TwoisFireing",false);
         if(isMov)
             animator.SetBool("TwoisMoving",true);
         else
@@ -111,24 +116,33 @@ public class PlayerTwoController : MonoBehaviour
             // Aspetto il Messaggio di Risposta del Server
             clsMessaggio msgByServer = clientSocket.clientRicevi();
 
-            // Salvo le nuove coordinate
-            movementRequest.x = float.Parse(msgByServer.messaggio.Split(":")[1].Split("#")[0]);
-            movementRequest.y = float.Parse(msgByServer.messaggio.Split(":")[2]);
-
-            if(movementRequestSaved != movementRequest){
-                isMov = true;
-                print("Moving");
-            }
-            else{
-                isMov = false;
-                print("Static");
-            }
-            if(movementRequest.x < movementRequestSaved.x)
-                flip = true;
-            else if (movementRequest.x > movementRequestSaved.x)
-                flip = false;
             
-            movementRequestSaved = movementRequest;
+            // SE IL NUOVO MESSAGGIO E' UN ATTACCO, ATTACCO
+            if(msgByServer.messaggio.Contains("FIRE"))
+                isFire = true;
+            else{
+                // SE IL NUOVO MESSSAGGIO E' UN
+                isFire = false;
+                // Salvo le nuove coordinate
+                movementRequest.x = float.Parse(msgByServer.messaggio.Split(":")[1].Split("#")[0]);
+                movementRequest.y = float.Parse(msgByServer.messaggio.Split(":")[2]);
+
+                if(movementRequestSaved != movementRequest){
+                    isMov = true;
+                    print("Moving");
+                }
+                else{
+                    isMov = false;
+                    print("Static");
+                }
+                if(movementRequest.x < movementRequestSaved.x)
+                    flip = true;
+                else if (movementRequest.x > movementRequestSaved.x)
+                    flip = false;
+                
+                movementRequestSaved = movementRequest;
+            
+            }
 
             // Chiudo il Socket
             clientSocket.Dispose();

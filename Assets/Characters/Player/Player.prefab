@@ -205,6 +205,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a727481f8f4d24c488027a8a04a5e1a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Canvas: {fileID: 0}
   moveSpeed: 1
   movementFilter:
     useTriggers: 0

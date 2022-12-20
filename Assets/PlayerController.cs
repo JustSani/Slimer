@@ -174,6 +174,22 @@ public class PlayerController : MonoBehaviour
 
     void OnFire(){
          animator.SetTrigger("swordAttack");
+
+         if (ipServer != null)
+            {
+                // provo a Connettermi al SERVER
+                try
+                {
+                    inviaDatiServer("*SEND*@FIRE");
+                }
+                catch (Exception ex)
+                {
+                    print("ATTENZIONE: " + ex.Message);
+                    SceneManager.LoadScene(0);
+                }
+
+            }
+
     }
 
     public void SwordAttack(){
