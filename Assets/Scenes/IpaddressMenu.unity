@@ -974,9 +974,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InputField: {fileID: 1671381741}
-  serverResponse: {fileID: 0}
   btnReady: {fileID: 0}
   btnIndietro: {fileID: 0}
+  barraCaricamento: {fileID: 0}
+  Titolo: {fileID: 0}
+  rispostaServer: {fileID: 0}
 --- !u!4 &1235317620
 Transform:
   m_ObjectHideFlags: 0

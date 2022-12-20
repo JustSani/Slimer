@@ -12,6 +12,11 @@ public class PlayerTwoController : MonoBehaviour
     Rigidbody2D rb;
     public GameObject playerTwo;
     Vector2 movementRequest;
+    Vector2 movementRequestSaved;
+    SpriteRenderer spriteRenderer;
+    Animator animator;
+    bool isMov;
+    bool flip;
 
     Thread requests;
     clsSocket clientSocket;
@@ -25,8 +30,10 @@ public class PlayerTwoController : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        movementRequestSaved = new Vector2(0 , 0);
         rb = GetComponent<Rigidbody2D>();
-        
+        animator = GetComponent<Animator>();
         print("ASKING FOR NEWS");
             try { ipServer = clsAddress.cercaIP(getIp()); }
             catch (Exception ex) {
@@ -41,16 +48,24 @@ public class PlayerTwoController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
-    {
-        if(movementRequest != Vector2.zero){
-            //rb.transform.position.x = movementRequest.x;
-            //rb.transform.position.y = movementRequest.y;    
+    void FixedUpdate(){
+        if(isMov)
+            animator.SetBool("TwoisMoving",true);
+        else
+            animator.SetBool("TwoisMoving",false);
+        if(flip)
+            spriteRenderer.flipX = true;
+        else
+            spriteRenderer.flipX = false;
+
+        if(animator.GetBool("TwoisMoving")){
             print("X:" + movementRequest.x + ",  Y:" + movementRequest.y);
-            //playerTwo.transform.position = new Vector3(movementRequest.x, movementRequest.y);
-            rb.MovePosition(rb.position + new Vector2(movementRequest.x - rb.position.x, movementRequest.y - rb.position.y) * 1f );
+            
+            rb.MovePosition(movementRequest);   
+        
         }
     }
+    
 
 
     public void AskingServer(){
@@ -78,7 +93,7 @@ public class PlayerTwoController : MonoBehaviour
             {
                 esito = false;
                 print("ATTENZIONE: " + ex.Message);
-                OperazioneSuClient.messaggio = "*ERROR*@No response";
+                ///OperazioneSuClient.messaggio = "*ERROR*@No response";
             }
         }
         if(!loopRequests)
@@ -100,6 +115,20 @@ public class PlayerTwoController : MonoBehaviour
             movementRequest.x = float.Parse(msgByServer.messaggio.Split(":")[1].Split("#")[0]);
             movementRequest.y = float.Parse(msgByServer.messaggio.Split(":")[2]);
 
+            if(movementRequestSaved != movementRequest){
+                isMov = true;
+                print("Moving");
+            }
+            else{
+                isMov = false;
+                print("Static");
+            }
+            if(movementRequest.x < movementRequestSaved.x)
+                flip = true;
+            else if (movementRequest.x > movementRequestSaved.x)
+                flip = false;
+            
+            movementRequestSaved = movementRequest;
 
             // Chiudo il Socket
             clientSocket.Dispose();
