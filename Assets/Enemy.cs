@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class Enemy : OnlineController
 {
     public GameObject slime;
     Animator animator;
@@ -30,6 +30,7 @@ public class Enemy : MonoBehaviour
     }
 
     public void RemoveEnemy(){
+        SlimeNumber -= 1;
         Destroy(gameObject);
 
     }

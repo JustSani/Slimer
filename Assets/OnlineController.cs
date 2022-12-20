@@ -15,12 +15,15 @@ using TMPro;
 
 public class OnlineController : MonoBehaviour
 {
+    public GameObject TitleObiettivo;
+    public static int SlimeNumber = 11;
     public TextMeshProUGUI InputField;
     public GameObject btnReady;
     public GameObject btnIndietro;    
     public GameObject barraCaricamento;
     public TextMeshProUGUI Titolo;
     public TextMeshProUGUI rispostaServer;
+    public TextMeshProUGUI NumberOfSlime;
     
     clsMessaggio OperazioneSuClient;
     clsSocket clientSocket;
@@ -140,6 +143,14 @@ public class OnlineController : MonoBehaviour
                     OperazioneSuClient.esito = "ERR_TXRQ";
                     break;
             }
+        }
+        if(SlimeNumber != 0)
+            NumberOfSlime.text = "Ne rimangono: " + SlimeNumber + " !";
+        if(SlimeNumber == 6)
+            NumberOfSlime.text = "Rimangono niente popodimenoche: " + SlimeNumber + " slime !";
+        if(SlimeNumber == 0){
+            NumberOfSlime.text = "BRAVISSIM0 !";
+            TitleObiettivo.SetActive(false);
         }
     }
 
