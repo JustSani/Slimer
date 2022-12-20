@@ -53,6 +53,7 @@ public class OnlineController : MonoBehaviour
     // Awake is called avery scene switch
     void Awake()
     { 
+        SlimeNumber = 11;   
         print("Time to change scene");
         OperazioneSuClient = new clsMessaggio();
         OperazioneSuClient.messaggio = "";
