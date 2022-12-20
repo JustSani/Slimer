@@ -135,7 +135,7 @@ public class PlayerTwoController : MonoBehaviour
                 isFire = true;
             if(msgByServer.messaggio.Contains("KILLED"))
                 slimeKilled = msgByServer.messaggio.Split('-')[1];
-            else{
+            if(msgByServer.messaggio.Contains("Position")){
                 // SE IL NUOVO MESSSAGGIO E' UN
                 isFire = false;
                 // Salvo le nuove coordinate
