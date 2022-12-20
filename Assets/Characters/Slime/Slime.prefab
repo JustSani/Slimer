@@ -137,6 +137,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 463a91b36a1d60e439f110e581f15eeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  slime: {fileID: 8686056459042956609}
   health: 1
 --- !u!95 &779160289249042777
 Animator:

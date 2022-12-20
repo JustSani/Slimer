@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    public GameObject slime;
     Animator animator;
     public float Health {
         set {
@@ -15,6 +16,9 @@ public class Enemy : MonoBehaviour
         get {
             return health;
         }
+    }
+    public string name(){
+        return slime.name;
     }
     public float health = 1;
 

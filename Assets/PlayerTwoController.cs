@@ -18,6 +18,7 @@ public class PlayerTwoController : MonoBehaviour
     bool isFire;
     bool isMov;
     bool flip;
+    string slimeKilled;
 
     Thread requests;
     clsSocket clientSocket;
@@ -31,6 +32,7 @@ public class PlayerTwoController : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        slimeKilled = "";
         spriteRenderer = GetComponent<SpriteRenderer>();
         movementRequestSaved = new Vector2(0 , 0);
         rb = GetComponent<Rigidbody2D>();
@@ -50,6 +52,10 @@ public class PlayerTwoController : MonoBehaviour
 
     // Update is called once per frame
     void FixedUpdate(){
+        if(slimeKilled != ""){
+            print("A slime was just killed: " + slimeKilled);
+            slimeKilled = "";
+        }
         if(isFire){
             animator.SetTrigger("TwoisFireing");
             isFire = false;
@@ -120,6 +126,8 @@ public class PlayerTwoController : MonoBehaviour
             // SE IL NUOVO MESSAGGIO E' UN ATTACCO, ATTACCO
             if(msgByServer.messaggio.Contains("FIRE"))
                 isFire = true;
+            if(msgByServer.messaggio.Contains("KILLED"))
+                slimeKilled = msgByServer.messaggio.Split('-')[1];
             else{
                 // SE IL NUOVO MESSSAGGIO E' UN
                 isFire = false;
